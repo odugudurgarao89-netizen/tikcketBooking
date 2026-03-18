@@ -1,5 +1,10 @@
 import express from 'express'
 import cors from 'cors'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -30,11 +35,11 @@ function createSeats(rows = 6, cols = 8) {
 // Seed with seats on server start
 seats = createSeats(6, 8)
 
-app.get('/seats', (req, res) => {
+app.get('/api/seats', (req, res) => {
   res.json(seats)
 })
 
-app.post('/book', (req, res) => {
+app.post('/api/book', (req, res) => {
   const { ids, bookingDetails } = req.body || {}
 
   if (!Array.isArray(ids) || !bookingDetails) {
@@ -91,12 +96,20 @@ app.post('/book', (req, res) => {
   })
 })
 
-app.get('/bookings/:id', (req, res) => {
+app.get('/api/bookings/:id', (req, res) => {
   const booking = bookings.find(b => b.id === req.params.id)
   if (!booking) {
     return res.status(404).json({ error: 'Booking not found' })
   }
   res.json(booking)
+})
+
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, '..', 'dist')))
+
+// Catch all handler: send back index.html for client-side routing
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'))
 })
 
 app.listen(PORT, () => {

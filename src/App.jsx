@@ -57,7 +57,7 @@ function App() {
     setError(null)
 
     try {
-      const res = await fetch(`${API_BASE}/seats`)
+      const res = await fetch(`${API_BASE}/api/seats`)
       if (!res.ok) throw new Error(`Failed to load seats (${res.status})`)
       const data = await res.json()
       const storedBookedIds = loadStoredBookedIds()
@@ -98,7 +98,7 @@ function App() {
     setError(null)
 
     try {
-      const res = await fetch(`${API_BASE}/book`, {
+      const res = await fetch(`${API_BASE}/api/book`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids: selectedIds, bookingDetails: bookingData }),
